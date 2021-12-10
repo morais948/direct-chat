@@ -1,26 +1,26 @@
 import React from 'react';
-import Menu from './components/Menu'
 import Home from './templates/App'
-import Login from './templates/Login'
+import TesteEstado from './templates/TesteEstado'
 import {
     BrowserRouter as Router,
     Switch,
     Route
 } from "react-router-dom";
-
-
+import Login from './templates/Login';
 
 function App() {
 
     return (
         <Router>
-            <Menu />
             <Switch>
                 <Route exact path="/">
-                    <Home />
-                </Route>                
-                <Route path="/login">
                     <Login />
+                </Route>    
+                <Route path="/home">
+                    <Home />
+                </Route>            
+                <Route path="/teste-estado">
+                    <TesteEstado />
                 </Route>
             </Switch>
         </Router>

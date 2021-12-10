@@ -4,10 +4,13 @@ export default function Menu(){
     return (
         <ul>
             <li>
-                <Link to="/">Home</Link>
+                <Link to="/">Login</Link>
             </li>
             <li>
-                <Link to="/login">About</Link>
+                <Link to="/home">Home</Link>
+            </li>
+            <li>
+                <Link to="/teste-estado">About</Link>
             </li>
         </ul>
     )

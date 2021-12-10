@@ -1,35 +1,56 @@
-import React from "react"
-import { useSelector, useDispatch } from 'react-redux'
-import { decrement, increment, incrementByAmount } from '../store/states/counter'
+import React, { useEffect, useState } from 'react';
+import { useHistory, Redirect } from "react-router-dom";
+import { loginWithGoogle, getUserLogged } from '../services/auth'
+import LinearProgress from '@mui/material/LinearProgress';
+import '../sass/login.scss';
 
-export default function Login() {
-    const count = useSelector((state) => state.counter.value)
-    const dispatch = useDispatch()
+function App() {
+    let history = useHistory();
+    let [load, setLoad] = useState(false)
+    let [logged, setLogged] = useState(false)
+
+    useEffect(_ => {
+        getUserLogged() && setLogged(true) 
+
+    }, [])
+
+    const login = () => {
+        setLoad(true)
+        loginWithGoogle()
+            .then(({ user }) => {
+                console.log(user)
+                history.push('/home')
+                setLoad(false)
+            })
+            .catch(err => {
+                console.log(err.code)
+                setLoad(false)
+            })
+    }
 
     return (
-        <div>
-            <div>
-                <button
-                    aria-label="Increment value"
-                    onClick={() => dispatch(increment())}
-                >
-                    Increment
-                </button>
-                <span>{count}</span>
-                <button
-                    aria-label="Decrement value"
-                    onClick={() => dispatch(decrement())}
-                >
-                    Decrement
-                </button>
+        <>
+            { logged && <Redirect to="/home" /> }
+            {
+                !logged && 
 
-                <button
-                    aria-label="Decrement value"
-                    onClick={() => dispatch(incrementByAmount(Number(6)))}
-                >
-                    incrementByAmount
-                </button>
-            </div>
-        </div>
-    )
+                <div className="container vh-100 login d-flex flex-column justify-content-center align-items-center">
+                    <div className="row">
+                        <div className="col">
+                            <h1 style={{ fontWeight: '700' }}>Direct Chat</h1>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col">
+                            <h4>Faça login com </h4>
+                            <img className="img-fluid btn btn-google rounded" onClick={login} src="./images/google.png" alt="google" />
+                            { load && <LinearProgress className="mt-2" /> }
+                        </div>
+                    </div>
+                </div>
+            }
+        </>
+    );
 }
+
+export default App;
