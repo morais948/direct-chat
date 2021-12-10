@@ -64,7 +64,9 @@ function App() {
 
     return (
         <div className="App vh-100">
-
+            { !getUserLogged() && 
+                <Redirect to="/" />
+            }
             { getUserLogged() && 
                 <>
             
@@ -120,9 +122,6 @@ function App() {
                         </SpeedDial>
                     </Box>
                 </>
-            }
-            { !getUserLogged() && 
-                <Redirect to="/login" />
             }
 
         </div>
