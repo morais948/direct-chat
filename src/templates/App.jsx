@@ -12,39 +12,39 @@ import Divider from '@mui/material/Divider';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
-import Typography from '@mui/material/Typography';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import '../sass/app.scss';
 import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, set } from "firebase/database";
 import configFirebase from '../config/firebase'
 import MenuIcon from '@mui/icons-material/Menu';
-import { useSelector } from 'react-redux'
 import { useHistory, Redirect } from "react-router-dom";
 import { logout, getUserLogged } from '../services/auth'
+
+import { useSelector, useDispatch } from 'react-redux'
+import { setLogged } from '../store/states/user'
 
 const app = initializeApp(configFirebase);
 const database = getDatabase(app);
 
-const style = {
-    width: '100%',
-    maxWidth: 360,
-    bgcolor: 'background.paper',
-};
 
 function App() {
 
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
-    const count = useSelector((state) => state.counter.value)
+    const logged = useSelector((state) => state.user.logged)
+    const dispatch = useDispatch()
+
+    //const count = useSelector((state) => state.counter.value)
     let history = useHistory();
 
     const disconect = () => {
-        logout().then(() => {
-            history.push("/");
+        logout().then(async () => {
+            await history.push("/");
+            await dispatch(setLogged(false))
         }).catch((error) => {
             console.log(error)
         })
@@ -55,21 +55,27 @@ function App() {
         { icon: <SettingsIcon />, name: 'Configurações' },
         { icon: <ChatIcon />, name: 'Conversas' },
     ]
-
+    /*
     const criarDados = () => {
         set(ref(database, 'grupos/' + 45646), {
             name: 'só os boys'
         }).then(_ => alert('tudo feito'))
     }
+    */
+
+    useEffect(() => {
+        console.log(logged)
+
+        return () => {
+            
+        }
+    }, [])
 
     return (
         <div className="App vh-100">
-            { !getUserLogged() && 
-                <Redirect to="/" />
-            }
-            { getUserLogged() && 
-                <>
-            
+            { !logged 
+                ? <Redirect to="/" />
+                :<>
                     <List sx={{ width: '100%', maxWidth: 360, color: 'white' }}>
                         <ListItem alignItems="flex-start" sx={{ backgroundColor: '#0d0d0d' }}>
                             <ListItemAvatar>
@@ -99,7 +105,6 @@ function App() {
                         </ListItem>
                     </List>
                     
-        
                     <Box sx={{transform: 'translateZ(0px)', flexGrow: 1, position: 'relative', top: '60%' }}>
                         <Backdrop open={open} />
                             <SpeedDial
@@ -123,7 +128,6 @@ function App() {
                     </Box>
                 </>
             }
-
         </div>
     );
 }

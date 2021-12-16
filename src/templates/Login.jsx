@@ -3,22 +3,23 @@ import { useHistory, Redirect } from "react-router-dom";
 import { loginWithGoogle, getUserLogged } from '../services/auth'
 import LinearProgress from '@mui/material/LinearProgress';
 import '../sass/login.scss';
+import { useSelector, useDispatch } from 'react-redux'
+import { setLogged } from '../store/states/user'
 
-function App() {
+function Login() {
     let history = useHistory();
     let [load, setLoad] = useState(false)
 
-    useEffect(_ => {
-        getUserLogged() && history.push('/home')
-        //consertar erros de autenticacao
-    }, [])
+    const logged = useSelector((state) => state.user.logged)
+    const dispatch = useDispatch()
 
     const login = () => {
         setLoad(true)
         loginWithGoogle()
-            .then(({ user }) => {
+            .then(async ({ user }) => {
                 console.log(user)
-                history.push('/home')
+                await history.push('/home')
+                await dispatch(setLogged(true))
                 setLoad(false)
             })
             .catch(err => {
@@ -27,22 +28,34 @@ function App() {
             })
     }
 
+    useEffect(() => {
+        console.log(logged)
+
+        return () => {
+            
+        }
+    }, [])
+
     return (
-        <div className="container vh-100 login d-flex flex-column justify-content-center align-items-center">
-            <div className="row">
-                <div className="col">
-                    <h1 style={{ fontWeight: '700' }}>Direct Chat</h1>
+        <>
+            { logged ? <Redirect to="/home" /> :
+                <div className="container vh-100 login d-flex flex-column justify-content-center align-items-center">
+                    <div className="row">
+                        <div className="col">
+                            <h1 style={{ fontWeight: '700' }}>Direct Chat</h1>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col">
+                            <h4>Faça login com </h4>
+                            <img className="img-fluid btn btn-google rounded" onClick={login} src="./images/google.png" alt="google" />
+                            { load && <LinearProgress className="mt-2" /> }
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div className="row">
-                <div className="col">
-                    <h4>Faça login com </h4>
-                    <img className="img-fluid btn btn-google rounded" onClick={login} src="./images/google.png" alt="google" />
-                    { load && <LinearProgress className="mt-2" /> }
-                </div>
-            </div>
-        </div>
+            }
+        </>
     );
 }
 
-export default App;
+export default Login;

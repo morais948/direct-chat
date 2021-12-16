@@ -16,10 +16,10 @@ function App() {
                 <Route exact path="/">
                     <Login />
                 </Route>    
-                <Route path="/home">
+                <Route exact path="/home">
                     <Home />
                 </Route>            
-                <Route path="/teste-estado">
+                <Route exact path="/teste-estado">
                     <TesteEstado />
                 </Route>
             </Switch>
